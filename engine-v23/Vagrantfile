@@ -1,0 +1,24 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+
+Vagrant.configure("2") do |config|
+  
+  # Use Ubuntu 20.04 as base
+  config.vm.box = "ubuntu/focal64"
+
+  config.vm.box_check_update =false
+
+  # Synchronize all the docker-compose related file to `/vagrant` dir in VM
+  config.vm.synced_folder "../docker-compose", "/vagrant"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "2048"
+  end
+
+  # Setup the VM with all the different variants of Docker Compose in them
+  config.vm.provision "ansible" do |a|
+    a.verbose = "v"
+    a.playbook = "../ansible/docker-engine-v23.yml"
+  end
+end

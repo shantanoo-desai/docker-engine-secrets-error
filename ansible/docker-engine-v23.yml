@@ -1,0 +1,35 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    docker_base_url: https://download.docker.com/linux/ubuntu/dists/focal/pool/stable/amd64
+
+  tasks:
+    - name: Install Docker related Debian Packages
+      ansible.builtin.apt:
+        deb: "{{ docker_base_url }}/{{ item }}"
+      loop:
+       - containerd.io_1.6.9-1_amd64.deb
+       - docker-ce-cli_23.0.6-1~ubuntu.20.04~focal_amd64.deb
+       - docker-ce_23.0.6-1~ubuntu.20.04~focal_amd64.deb
+       - docker-buildx-plugin_0.10.4-1~ubuntu.20.04~focal_amd64.deb
+    
+    - name: add userpermissions
+      shell: "usermod -aG docker vagrant"
+    
+    - name: Install Docker Compose Plugins v2.16, v2.17, v2.18
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/{{ item }}/docker-compose-linux-x86_64"
+        dest: "/usr/local/bin/docker-compose-{{ item }}"
+        mode: 'u+x,g+x'
+      loop:
+        - v2.18.1
+        - v2.17.3
+        - v2.16.0
+
+    - name: executable for compose versions
+      shell: "chmod +x /usr/local/bin/docker-compose-{{ item }}"
+      loop:
+        - v2.18.1
+        - v2.17.3
+        - v2.16.0

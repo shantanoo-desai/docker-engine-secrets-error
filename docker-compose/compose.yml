@@ -1,0 +1,10 @@
+services:
+  demo:
+    image: alpine
+    secrets:
+      - foo
+    # user: "1000"
+
+secrets:
+    foo:
+      environment: FOO
